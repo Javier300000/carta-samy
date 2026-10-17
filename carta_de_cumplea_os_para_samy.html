@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Feliz Cumpleaños, Samy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-top: #fff6f8;
+      --bg-mid: #fdf0f5;
+      --bg-bot: #f5ecff;
+      --paper-bg: #fffdf9;
+      --paper-line: rgba(218, 185, 198, 0.36);
+      --ink-graphite: #363238;
+      --accent-rose: #d96b8a;
+      --accent-gold: #c99b52;
+      --envelope-base: #f9e6ec;
+      --envelope-flap: #f3d5df;
+      --envelope-side: #f6dce5;
+      --wax-main: #c84b6b;
+      --wax-dark: #962d49;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      min-height: 100dvh;
+      overflow-x: hidden;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: radial-gradient(circle at 50% 15%, var(--bg-top) 0%, var(--bg-mid) 55%, var(--bg-bot) 100%);
+      color: var(--ink-graphite);
+      user-select: none;
+    }
+
+    /* Fondo de partículas y pétalos */
+    #ambient-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Guirnalda superior de cumpleaños */
+    .bunting-top {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: clamp(46px, 8vw, 75px);
+      z-index: 15;
+      pointer-events: none;
+      filter: drop-shadow(0 4px 8px rgba(185, 120, 145, 0.15));
+    }
+
+    /* Contenedor principal */
+    .stage {
+      position: relative;
+      z-index: 5;
+      width: 100%;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(58px, 10vh, 90px) 14px 100px;
+    }
+
+    /* ================= ESCENA DEL SOBRE ================= */
+    .envelope-scene {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-width: 520px;
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .envelope-scene.hidden {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(35px) scale(0.94);
+      position: absolute;
+    }
+
+    .snoopy-header-badge {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 14px;
+      text-align: center;
+    }
+
+    .snoopy-svg-hero {
+      width: clamp(120px, 32vw, 155px);
+      height: auto;
+      filter: drop-shadow(0 8px 14px rgba(180, 120, 140, 0.18));
+      animation: floatSnoopy 3.6s ease-in-out infinite;
+    }
+
+    @keyframes floatSnoopy {
+      0%, 100% { transform: translateY(0px) rotate(-1deg); }
+      50% { transform: translateY(-7px) rotate(1.5deg); }
+    }
+
+    .bday-pill {
+      margin-top: 6px;
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid rgba(217, 107, 138, 0.3);
+      padding: 5px 16px;
+      border-radius: 999px;
+      font-size: clamp(0.72rem, 2.5vw, 0.82rem);
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #b85472;
+      box-shadow: 0 4px 14px rgba(217, 107, 138, 0.12);
+    }
+
+    .envelope-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.75rem, 6vw, 2.45rem);
+      font-weight: 700;
+      color: #6d3b4e;
+      margin: 6px 0 18px;
+      text-align: center;
+      line-height: 1.15;
+    }
+
+    /* Sobre 3D responsivo */
+    .envelope-wrapper {
+      position: relative;
+      width: min(92vw, 440px);
+      height: min(60vw, 290px);
+      min-height: 215px;
+      perspective: 1200px;
+      cursor: pointer;
+    }
+
+    .envelope-body {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: var(--envelope-base);
+      border-radius: 14px;
+      box-shadow:
+        0 22px 45px rgba(145, 85, 108, 0.22),
+        0 4px 12px rgba(145, 85, 108, 0.12),
+        inset 0 0 0 1.5px rgba(255, 255, 255, 0.7);
+      overflow: visible;
+      transform-style: preserve-3d;
+    }
+
+    /* Hoja asomándose dentro del sobre */
+    .envelope-letter-preview {
+      position: absolute;
+      left: 7%;
+      right: 7%;
+      top: 10%;
+      bottom: 10%;
+      background: var(--paper-bg);
+      border-radius: 10px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+      z-index: 2;
+      transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding-top: 22px;
+      border: 1px solid #f2e2e7;
+    }
+
+    .envelope-letter-preview span {
+      font-family: 'Caveat', cursive;
+      font-size: clamp(1.3rem, 4.5vw, 1.7rem);
+      color: #8a4f64;
+    }
+
+    .envelope-wrapper.opening .envelope-letter-preview {
+      transform: translateY(-48%) scale(1.02);
+    }
+
+    /* Pliegues laterales e inferior */
+    .flap-left, .flap-right, .flap-bottom {
+      position: absolute;
+      inset: 0;
+      border-radius: 14px;
+      pointer-events: none;
+    }
+
+    .flap-left {
+      background: linear-gradient(135deg, var(--envelope-side) 0%, #f1ceda 100%);
+      clip-path: polygon(0 0, 53% 52%, 0 100%);
+      z-index: 3;
+    }
+
+    .flap-right {
+      background: linear-gradient(225deg, var(--envelope-side) 0%, #eddce2 100%);
+      clip-path: polygon(100% 0, 47% 52%, 100% 100%);
+      z-index: 3;
+    }
+
+    .flap-bottom {
+      background: linear-gradient(0deg, #f3d2de 0%, #fae5ec 100%);
+      clip-path: polygon(0 100%, 50% 46%, 100% 100%);
+      z-index: 4;
+      filter: drop-shadow(0 -3px 6px rgba(140, 75, 95, 0.08));
+    }
+
+    /* Solapa superior móvil */
+    .flap-top {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, var(--envelope-flap) 0%, #ecc2d0 100%);
+      clip-path: polygon(0 0, 100% 0, 50% 58%);
+      transform-origin: top center;
+      transition: transform 0.75s cubic-bezier(0.4, 0, 0.2, 1), z-index 0.2s 0.35s;
+      z-index: 6;
+      border-radius: 14px 14px 0 0;
+      filter: drop-shadow(0 6px 10px rgba(135, 65, 88, 0.15));
+    }
+
+    .envelope-wrapper.opening .flap-top {
+      transform: rotateX(180deg);
+      z-index: 1;
+    }
+
+    /* Sello de lacre con huella de Snoopy */
+    .wax-seal {
+      position: absolute;
+      top: 54%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: clamp(64px, 16vw, 76px);
+      height: clamp(64px, 16vw, 76px);
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #e06384 0%, var(--wax-main) 55%, var(--wax-dark) 100%);
+      box-shadow:
+        0 8px 18px rgba(135, 34, 62, 0.36),
+        inset 0 2px 4px rgba(255, 255, 255, 0.35),
+        inset 0 -3px 6px rgba(75, 14, 31, 0.5);
+      z-index: 8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.45s ease, opacity 0.45s ease;
+      border: 2px solid rgba(238, 198, 135, 0.65);
+    }
+
+    .wax-seal::after {
+      content: '';
+      position: absolute;
+      inset: 6px;
+      border-radius: 50%;
+      border: 1.5px dashed rgba(255, 232, 190, 0.65);
+    }
+
+    .wax-seal:hover {
+      transform: translate(-50%, -50%) scale(1.07);
+    }
+
+    .envelope-wrapper.opening .wax-seal {
+      transform: translate(-50%, -50%) scale(1.35) rotate(15deg);
+      opacity: 0;
+    }
+
+    .tap-instruction {
+      margin-top: 20px;
+      font-size: clamp(0.85rem, 3vw, 0.96rem);
+      color: #8c586b;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+      animation: pulseHint 2.2s ease-in-out infinite;
+      text-align: center;
+    }
+
+    @keyframes pulseHint {
+      0%, 100% { opacity: 0.65; transform: translateY(0); }
+      50% { opacity: 1; transform: translateY(-3px); }
+    }
+
+    /* ================= ESCENA DE LA CARTA ================= */
+    .letter-scene {
+      display: none;
+      width: 100%;
+      max-width: 780px;
+      position: relative;
+      opacity: 0;
+      transform: translateY(25px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .letter-scene.active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .paper-sheet {
+      position: relative;
+      width: 100%;
+      background: var(--paper-bg);
+      border-radius: clamp(14px, 3vw, 22px);
+      padding: clamp(26px, 6vw, 56px) clamp(20px, 6vw, 64px) clamp(40px, 8vw, 68px);
+      box-shadow:
+        0 20px 55px rgba(145, 92, 114, 0.18),
+        0 3px 12px rgba(145, 92, 114, 0.08),
+        inset 0 0 0 1px rgba(226, 192, 204, 0.65);
+      overflow: hidden;
+    }
+
+    /* Renglones sutiles del papel */
+    .paper-sheet::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 35px,
+        var(--paper-line) 36px
+      );
+      pointer-events: none;
+      opacity: 0.65;
+    }
+
+    /* Margen izquierdo vertical tipo libreta fina */
+    .paper-sheet::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: clamp(14px, 4.2vw, 44px);
+      width: 1.5px;
+      background: rgba(217, 107, 138, 0.22);
+      pointer-events: none;
+    }
+
+    /* Encabezado de la hoja con timbre postal de Snoopy */
+    .letter-header {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: clamp(18px, 4vw, 28px);
+      padding-bottom: 14px;
+      border-bottom: 1.5px dashed rgba(212, 165, 180, 0.55);
+    }
+
+    .letter-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .letter-tag {
+      font-size: clamp(0.68rem, 2.2vw, 0.78rem);
+      text-transform: uppercase;
+      letter-spacing: 1.6px;
+      color: #b5657f;
+      font-weight: 700;
+    }
+
+    .letter-sub {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: clamp(1rem, 3.2vw, 1.2rem);
+      color: #7d5262;
+    }
+
+    /* Estampilla postal Snoopy */
+    .snoopy-stamp {
+      width: clamp(62px, 15vw, 78px);
+      height: clamp(72px, 17vw, 90px);
+      background: #fff9fb;
+      border: 2px dashed #d699ab;
+      border-radius: 6px;
+      padding: 5px;
+      box-shadow: 0 4px 10px rgba(160, 100, 120, 0.12);
+      transform: rotate(3deg);
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .snoopy-stamp span {
+      font-size: 0.54rem;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      color: #9e586e;
+      text-transform: uppercase;
+    }
+
+    /* Texto manuscrito a lápiz */
+    .letter-content {
+      position: relative;
+      z-index: 2;
+      font-family: 'Caveat', cursive;
+      font-size: clamp(1.36rem, 4.4vw, 1.72rem);
+      line-height: 1.62;
+      color: var(--ink-graphite);
+      letter-spacing: 0.2px;
+    }
+
+    .letter-paragraph {
+      margin-bottom: clamp(16px, 3.8vw, 24px);
+      min-height: 1.2em;
+    }
+
+    .letter-paragraph:first-child {
+      font-size: clamp(1.65rem, 5.4vw, 2.2rem);
+      font-weight: 700;
+      color: #8f3958;
+      margin-bottom: 20px;
+    }
+
+    /* Cada letra animada con textura de grafito */
+    .char {
+      opacity: 0;
+      display: inline;
+      transition: opacity 0.04s linear;
+      text-shadow: 0.3px 0.4px 0.6px rgba(54, 50, 56, 0.28);
+    }
+
+    .char.visible {
+      opacity: 1;
+    }
+
+    /* Boceto final en grafito de Snoopy y tulipán */
+    .sketch-footer {
+      position: relative;
+      z-index: 2;
+      margin-top: 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.9s ease, transform 0.9s ease;
+    }
+
+    .sketch-footer.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .sketch-svg {
+      width: clamp(170px, 44vw, 220px);
+      height: auto;
+    }
+
+    .sketch-path {
+      fill: none;
+      stroke: #49434b;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 600;
+      stroke-dashoffset: 600;
+    }
+
+    .sketch-footer.show .sketch-path {
+      animation: drawGraphite 2.4s ease forwards;
+    }
+
+    @keyframes drawGraphite {
+      to { stroke-dashoffset: 0; }
+    }
+
+    /* ================= TICKET FLOTANTE TULIPÁN BLANCO ================= */
+    .ticket-container {
+      position: relative;
+      z-index: 3;
+      margin-top: clamp(26px, 6vw, 38px);
+      display: none;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .ticket-container.visible {
+      display: flex;
+      animation: popInTicket 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    @keyframes popInTicket {
+      0% { opacity: 0; transform: translateY(24px) scale(0.92); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .tulip-ticket {
+      position: relative;
+      width: 100%;
+      max-width: 520px;
+      background: linear-gradient(135deg, #fffdf9 0%, #fff3f7 55%, #f9f2ff 100%);
+      border: 2px solid #e2b8c6;
+      border-radius: 18px;
+      padding: clamp(16px, 4vw, 24px);
+      display: flex;
+      align-items: center;
+      gap: clamp(14px, 3.5vw, 22px);
+      box-shadow:
+        0 16px 36px rgba(175, 110, 135, 0.2),
+        inset 0 0 0 1.5px rgba(255, 255, 255, 0.9);
+      animation: floatTicket 3.4s ease-in-out infinite;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    @keyframes floatTicket {
+      0%, 100% { transform: translateY(0px) rotate(-0.4deg); }
+      50% { transform: translateY(-8px) rotate(0.6deg); }
+    }
+
+    /* Brillo perlado suave que cruza el ticket */
+    .tulip-ticket::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -120%;
+      width: 65%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.75), transparent);
+      transform: skewX(-22deg);
+      animation: ticketShimmer 4.5s infinite;
+      pointer-events: none;
+    }
+
+    @keyframes ticketShimmer {
+      0% { left: -120%; }
+      45%, 100% { left: 160%; }
+    }
+
+    .ticket-art {
+      width: clamp(74px, 20vw, 96px);
+      height: clamp(74px, 20vw, 96px);
+      background: #ffffff;
+      border-radius: 14px;
+      border: 1.5px solid #edd2dc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 6px 14px rgba(175, 115, 138, 0.1);
+    }
+
+    .ticket-info {
+      flex: 1;
+      border-left: 2px dashed #e2b8c6;
+      padding-left: clamp(12px, 3.5vw, 20px);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .ticket-serial {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 1.8px;
+      text-transform: uppercase;
+      color: #b46a82;
+    }
+
+    .ticket-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.22rem, 4.2vw, 1.55rem);
+      font-weight: 700;
+      color: #5e3143;
+      line-height: 1.15;
+    }
+
+    .ticket-desc {
+      font-size: clamp(0.78rem, 2.6vw, 0.88rem);
+      color: #7d5665;
+    }
+
+    .ticket-badge-btn {
+      margin-top: 6px;
+      align-self: flex-start;
+      background: linear-gradient(135deg, #d96b8a, #b84c6b);
+      color: #fff;
+      font-size: 0.74rem;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 999px;
+      box-shadow: 0 4px 12px rgba(184, 76, 107, 0.28);
+      transition: transform 0.2s ease, background 0.3s ease;
+    }
+
+    .tulip-ticket.claimed .ticket-badge-btn {
+      background: linear-gradient(135deg, #68a37c, #4d8560);
+    }
+
+    /* ================= LÁPIZ 3D REALISTA ================= */
+    #pencil-Follower {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: clamp(145px, 36vw, 230px);
+      height: auto;
+      pointer-events: none;
+      z-index: 50;
+      opacity: 0;
+      transform-origin: 4px 96%;
+      transition: opacity 0.25s ease;
+      filter: drop-shadow(8px 14px 10px rgba(65, 42, 52, 0.28));
+      will-change: transform;
+    }
+
+    #pencil-Follower.active {
+      opacity: 1;
+    }
+
+    /* ================= DOCK INFERIOR MINIMALISTA ================= */
+    .floating-dock {
+      position: fixed;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 40;
+      display: none;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.86);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 7px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(217, 107, 138, 0.28);
+      box-shadow: 0 10px 28px rgba(135, 75, 98, 0.18);
+    }
+
+    .floating-dock.visible {
+      display: flex;
+    }
+
+    .dock-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: none;
+      background: #fff5f8;
+      color: #7c4257;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.78rem;
+      font-weight: 700;
+      transition: background 0.2s ease, transform 0.15s ease, color 0.2s ease;
+      box-shadow: inset 0 0 0 1px rgba(217, 107, 138, 0.2);
+    }
+
+    .dock-btn:active {
+      transform: scale(0.92);
+    }
+
+    .dock-btn.active-mode {
+      background: #d96b8a;
+      color: #ffffff;
+    }
+
+    .dock-btn svg {
+      width: 17px;
+      height: 17px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* Ajustes para pantallas pequeñas de teléfono */
+    @media (max-width: 480px) {
+      .tulip-ticket {
+        flex-direction: column;
+        text-align: center;
+        padding: 18px 14px;
+      }
+      .ticket-info {
+        border-left: none;
+        border-top: 2px dashed #e2b8c6;
+        padding-left: 0;
+        padding-top: 12px;
+        align-items: center;
+      }
+      .ticket-badge-btn {
+        align-self: center;
+      }
+      .paper-sheet::after {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Lienzo de partículas doradas y pétalos de tulipán blanco -->
+  <canvas id="ambient-canvas"></canvas>
+
+  <!-- Guirnalda festiva pastel (100% SVG sin emojis) -->
+  <svg class="bunting-top" viewBox="0 0 1200 90" preserveAspectRatio="none">
+    <path d="M0,10 Q150,75 300,15 Q450,75 600,15 Q750,75 900,15 Q1050,75 1200,10" fill="none" stroke="#d9a7b8" stroke-width="2.5"/>
+    <!-- Banderines -->
+    <polygon points="35,22 85,34 55,78" fill="#f7cad8"/>
+    <polygon points="110,38 160,44 132,85" fill="#fce8c7"/>
+    <polygon points="190,42 240,35 218,82" fill="#e2d4f7"/>
+    <polygon points="335,22 385,34 355,78" fill="#f5b8cb"/>
+    <polygon points="410,38 460,44 432,85" fill="#fff0d4"/>
+    <polygon points="490,42 540,35 518,82" fill="#dcd0f2"/>
+    <polygon points="635,22 685,34 655,78" fill="#f7cad8"/>
+    <polygon points="710,38 760,44 732,85" fill="#fce8c7"/>
+    <polygon points="790,42 840,35 818,82" fill="#e2d4f7"/>
+    <polygon points="935,22 985,34 955,78" fill="#f5b8cb"/>
+    <polygon points="1010,38 1060,44 1032,85" fill="#fff0d4"/>
+    <polygon points="1090,42 1140,35 1118,82" fill="#dcd0f2"/>
+  </svg>
+
+  <main class="stage">
+    <!-- ================= ESCENA 1: SOBRE CERRADO ================= -->
+    <section class="envelope-scene" id="envelope-scene">
+      <div class="snoopy-header-badge">
+        <!-- Ilustración vectorial de Snoopy con gorrito de fiesta y Woodstock -->
+        <svg class="snoopy-svg-hero" viewBox="0 0 220 175" xmlns="http://www.w3.org/2000/svg">
+          <!-- Globos pastel -->
+          <line x1="162" y1="68" x2="145" y2="128" stroke="#c89fae" stroke-width="1.6"/>
+          <line x1="188" y1="78" x2="145" y2="128" stroke="#c89fae" stroke-width="1.6"/>
+          <ellipse cx="162" cy="46" rx="20" ry="24" fill="#f7bfd0" stroke="#5a3e49" stroke-width="2"/>
+          <ellipse cx="155" cy="38" rx="4" ry="7" fill="#ffffff" opacity="0.6"/>
+          <ellipse cx="190" cy="58" rx="18" ry="22" fill="#dcd0ff" stroke="#5a3e49" stroke-width="2"/>
+          <ellipse cx="184" cy="50" rx="3.5" ry="6" fill="#ffffff" opacity="0.6"/>
+
+          <!-- Cuerpo y cabeza de Snoopy -->
+          <path d="M82,152 C78,125 84,104 98,98 C112,98 118,120 115,152 Z" fill="#ffffff" stroke="#363238" stroke-width="2.6" stroke-linejoin="round"/>
+          <!-- Collar rojo -->
+          <path d="M88,101 L110,101" stroke="#d94f66" stroke-width="5" stroke-linecap="round"/>
+          <!-- Cabeza -->
+          <path d="M72,66 C56,66 48,79 58,90 C68,99 88,98 98,95 C118,95 135,88 135,74 C135,61 118,56 102,58 C95,48 82,50 72,66 Z" fill="#ffffff" stroke="#363238" stroke-width="2.6" stroke-linejoin="round"/>
+          <!-- Oreja negra -->
+          <path d="M74,72 C64,84 64,106 76,109 C87,111 90,94 84,76 Z" fill="#363238"/>
+          <!-- Nariz y sonrisa -->
+          <ellipse cx="136" cy="72" rx="6.5" ry="5" fill="#363238"/>
+          <path d="M104,84 Q117,91 128,83" fill="none" stroke="#363238" stroke-width="2.2" stroke-linecap="round"/>
+          <!-- Ojo feliz cerrado -->
+          <path d="M97,67 Q103,61 108,67" fill="none" stroke="#363238" stroke-width="2.4" stroke-linecap="round"/>
+          <!-- Gorrito de cumpleaños -->
+          <polygon points="78,55 96,18 109,56" fill="#f7c97e" stroke="#363238" stroke-width="2.4" stroke-linejoin="round"/>
+          <circle cx="96" cy="16" r="5.5" fill="#d96b8a" stroke="#363238" stroke-width="2"/>
+          <!-- Brazo y patitas -->
+          <path d="M106,112 Q128,118 145,125" fill="none" stroke="#363238" stroke-width="2.6" stroke-linecap="round"/>
+          <ellipse cx="86" cy="154" rx="11" ry="6" fill="#ffffff" stroke="#363238" stroke-width="2.4"/>
+          <ellipse cx="111" cy="154" rx="11" ry="6" fill="#ffffff" stroke="#363238" stroke-width="2.4"/>
+
+          <!-- Woodstock celebrando -->
+          <g transform="translate(32, 92)">
+            <circle cx="18" cy="18" r="10" fill="#" style="fill:#ffe066" stroke="#363238" stroke-width="2"/>
+            <path d="M14,8 L10,1 M18,7 L18,0 M22,9 L26,2" stroke="#363238" stroke-width="2" stroke-linecap="round"/>
+            <polygon points="27,16 36,19 27,22" fill="#ffa94d" stroke="#363238" stroke-width="1.6"/>
+          </g>
+        </svg>
+        <div class="bday-pill">Edición Especial de Cumpleaños</div>
+      </div>
+
+      <h1 class="envelope-title">Para mi hermosa Samy</h1>
+
+      <div class="envelope-wrapper" id="envelope-trigger" role="button" aria-label="Abrir sobre de cumpleaños">
+        <div class="envelope-body">
+          <div class="envelope-letter-preview">
+            <span>¡Feliz cumpleaños, mi hermosa Samy!</span>
+          </div>
+          <div class="flap-left"></div>
+          <div class="flap-right"></div>
+          <div class="flap-bottom"></div>
+          <div class="flap-top"></div>
+
+          <!-- Sello de lacre con huella de Snoopy en dorado -->
+          <div class="wax-seal">
+            <svg width="34" height="34" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="32" cy="39" rx="12" ry="10" fill="#fce3b4"/>
+              <circle cx="18" cy="24" r="5" fill="#fce3b4"/>
+              <circle cx="27" cy="19" r="5" fill="#fce3b4"/>
+              <circle cx="37" cy="19" r="5" fill="#fce3b4"/>
+              <circle cx="46" cy="24" r="5" fill="#fce3b4"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <p class="tap-instruction">Toca el sello para abrir tu carta</p>
+    </section>
+
+    <!-- ================= ESCENA 2: HOJA DE CARTA Y LÁPIZ ================= -->
+    <section class="letter-scene" id="letter-scene">
+      <article class="paper-sheet" id="paper-sheet">
+        <header class="letter-header">
+          <div class="letter-meta">
+            <span class="letter-tag">Carta escrita a mano para ti</span>
+            <span class="letter-sub">Celebrando tu vida </span>
+          </div>
+          <!-- Timbre postal de Snoopy en su casita (sin emojis) -->
+          <div class="snoopy-stamp">
+            <svg width="46" height="48" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+              <!-- Casita roja -->
+              <polygon points="12,48 40,26 68,48" fill="#d95b72" stroke="#363238" stroke-width="2.5" stroke-linejoin="round"/>
+              <rect x="20" y="48" width="40" height="26" fill="#e67388" stroke="#363238" stroke-width="2.5"/>
+              <!-- Snoopy acostado arriba -->
+              <ellipse cx="42" cy="23" rx="14" ry="7" fill="#ffffff" stroke="#363238" stroke-width="2.2"/>
+              <circle cx="27" cy="20" r="6" fill="#ffffff" stroke="#363238" stroke-width="2.2"/>
+              <ellipse cx="30" cy="23" rx="3" ry="5" fill="#363238"/>
+            </svg>
+            <span>Samy </span>
+          </div>
+        </header>
+
+        <!-- Contenedor donde el lápiz escribe letra por letra -->
+        <div class="letter-content" id="letter-content"></div>
+
+        <!-- Boceto final dibujado en grafito al terminar la carta -->
+        <div class="sketch-footer" id="sketch-footer">
+          <svg class="sketch-svg" viewBox="0 0 260 110" xmlns="http://www.w3.org/2000/svg">
+            <!-- Snoopy y Tulipán en trazo de lápiz -->
+            <path class="sketch-path" d="M65,95 C63,75 68,60 78,56 C88,56 93,72 90,95 M68,52 C56,52 50,62 58,69 C66,75 80,74 88,72 C102,72 114,67 114,57 C114,48 101,44 90,46 C84,38 74,40 68,52 Z M70,56 C63,64 63,79 71,81 C78,82 81,70 76,58 M138,95 L138,48 M138,76 Q124,68 126,56 Q134,64 138,72 M138,74 Q152,66 150,54 Q142,62 138,70 M128,48 C126,32 134,24 138,34 C142,24 150,32 148,48 C148,54 128,54 128,48 Z" />
+          </svg>
+        </div>
+
+        <!-- Ticket Flotante Válido por un Tulipán Blanco -->
+        <div class="ticket-container" id="ticket-container">
+          <div class="tulip-ticket" id="tulip-ticket" role="button" aria-label="Canjear ticket por un tulipán blanco">
+            <div class="ticket-art">
+              <!-- Ilustración vectorial de Tulipán Blanco -->
+              <svg width="64" height="64" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <!-- Tallo y hojas verdes -->
+                <path d="M50,52 L50,90" stroke="#5d946e" stroke-width="4.5" stroke-linecap="round"/>
+                <path d="M50,82 C34,76 28,60 34,48 C42,58 46,70 50,78 Z" fill="#7eb58e" stroke="#477556" stroke-width="2" stroke-linejoin="round"/>
+                <path d="M50,84 C66,78 72,62 66,50 C58,60 54,72 50,80 Z" fill="#6ca37d" stroke="#477556" stroke-width="2" stroke-linejoin="round"/>
+                <!-- Pétalos del Tulipán Blanco -->
+                <path d="M50,14 C38,24 36,42 50,54 C64,42 62,24 50,14 Z" fill="#ffffff" stroke="#9e8c94" stroke-width="2.2" stroke-linejoin="round"/>
+                <path d="M34,22 C28,36 34,52 50,54 C44,40 42,28 34,22 Z" fill="#fcf8fa" stroke="#9e8c94" stroke-width="2.2" stroke-linejoin="round"/>
+                <path d="M66,22 C72,36 66,52 50,54 C56,40 58,28 66,22 Z" fill="#f7f0f4" stroke="#9e8c94" stroke-width="2.2" stroke-linejoin="round"/>
+                <!-- Lazo rosa -->
+                <path d="M43,66 L57,66 M50,66 L44,74 M50,66 L56,74" stroke="#d96b8a" stroke-width="3" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="ticket-info">
+              <span class="ticket-serial">BOLETO ESPECIAL DE CUMPLEAÑOS · N° 001</span>
+              <h3 class="ticket-title">TICKET VÁLIDO POR UN TULIPÁN BLANCO</h3>
+              <p class="ticket-desc">Exclusivo para mi hermosa Samy · Sin fecha de vencimiento</p>
+              <span class="ticket-badge-btn" id="ticket-btn-text">Toca para reclamar tu tulipán</span>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <!-- Lápiz realista en SVG que sigue cada letra en tiempo real -->
+  <svg id="pencil-Follower" viewBox="0 0 320 56" xmlns="http://www.w3.org/2000/svg">
+    <g transform="rotate(-28 15 45)">
+      <!-- Punta de grafito -->
+      <polygon points="2,28 18,22 18,34" fill="#322f36"/>
+      <!-- Cono de madera tallada -->
+      <polygon points="18,22 48,16 48,40 18,34" fill="#f3cfa4" stroke="#cfa474" stroke-width="1"/>
+      <!-- Cuerpo hexagonal del lápiz -->
+      <rect x="48" y="16" width="195" height="8" fill="#f5a3b7"/>
+      <rect x="48" y="24" width="195" height="8" fill="#e27d96"/>
+      <rect x="48" y="32" width="195" height="8" fill="#c9607b"/>
+      <!-- Inscripción grabada en el lápiz (sin emojis) -->
+      <text x="105" y="30" fill="#fff6eb" font-family="Plus Jakarta Sans, sans-serif" font-size="6.8" font-weight="700" letter-spacing="1.4">SAMY · CUMPLEAÑOS</text>
+      <!-- Virola metálica dorada -->
+      <rect x="243" y="16" width="24" height="24" fill="#e6c47a" stroke="#b89348" stroke-width="1"/>
+      <line x1="250" y1="16" x2="250" y2="40" stroke="#b89348" stroke-width="1.2"/>
+      <line x1="258" y1="16" x2="258" y2="40" stroke="#b89348" stroke-width="1.2"/>
+      <!-- Goma de borrar -->
+      <path d="M267,16 L288,16 C294,16 294,40 288,40 L267,40 Z" fill="#f29cae" stroke="#c97386" stroke-width="1"/>
+    </g>
+  </svg>
+
+  <!-- Barra inferior flotante minimalista (100% iconos vectoriales) -->
+  <nav class="floating-dock" id="floating-dock" aria-label="Controles de la carta">
+    <button class="dock-btn" id="btn-pause" title="Pausar o continuar">
+      <svg id="icon-pause" viewBox="0 0 24 24">
+        <rect x="6" y="4" width="4" height="16" rx="1"/>
+        <rect x="14" y="4" width="4" height="16" rx="1"/>
+      </svg>
+    </button>
+    <button class="dock-btn" id="btn-speed" title="Velocidad de escritura">1x</button>
+    <button class="dock-btn" id="btn-skip" title="Mostrar toda la carta">
+      <svg viewBox="0 0 24 24">
+        <polygon points="5 4 15 12 5 20 5 4"/>
+        <line x1="19" y1="5" x2="19" y2="19"/>
+      </svg>
+    </button>
+    <button class="dock-btn active-mode" id="btn-sound" title="Activar o silenciar sonido">
+      <svg viewBox="0 0 24 24">
+        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+      </svg>
+    </button>
+    <button class="dock-btn" id="btn-replay" title="Volver a escribir">
+      <svg viewBox="0 0 24 24">
+        <polyline points="1 4 1 10 7 10"/>
+        <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+      </svg>
+    </button>
+  </nav>
+
+  <script>
+    // Texto íntegro y exacto de la carta para Samy
+    const paragraphsText = [
+      "¡Feliz cumpleaños, mi hermosa Samy!",
+      "Hoy celebramos uno de los días más mágicos e importantes del año: el día en que el mundo se hizo un lugar mucho mejor porque tú llegaste a él, mi Amorcito. Despertar hoy sabiendo que es tu cumpleaños me llena de una inmensa alegría, porque significa celebrar la vida de la mujer más increíble que he conocido, y quiero que hoy te sientas tan especial como me haces sentir a mí todos los días.",
+      "Admiro muchísimo la persona en la que te has convertido y la forma tan tuya de iluminar todo a tu alrededor. Tienes un corazón inmenso, una bondad que no conoce límites y una sonrisa que tiene el superpoder de arreglar cualquier día por más gris que parezca. Me encanta tu fuerza, tu inteligencia, tu dulzura y esa capacidad única que tienes de ver lo mejor en las personas. Tienes un don para hacer sentir amados y valorados a quienes te rodean. Eres la protagonista indiscutible de hoy, y quiero que te mires al espejo y veas a la mujer tan excepcional que yo veo todos los días.",
+      "Al mirar hacia atrás y pensar en estos más de dos años de historia que llevamos construyendo, me doy cuenta de que cada recuerdo a tu lado es un tesoro invaluable. Has sido mi refugio, mi motivación y mi mayor inspiración. Me enamoro de ti constantemente en los pequeños detalles: en tus carcajadas, en la forma en que me miras, en nuestras pláticas, y en cómo transformas cualquier momento ordinario en algo que quiero guardar para siempre. Verte crecer, superar obstáculos y brillar con luz propia es uno de mis mayores orgullos.",
+      "En este nuevo año de vida que hoy comienzas, quiero recordarte lo inmensamente capaz y maravillosa que eres. No hay meta que no puedas alcanzar ni sueño que te quede grande. Estoy completamente seguro de que el universo te tiene preparadas cosas espectaculares, y mi único deseo es poder estar siempre ahí, cerquita de ti, para celebrar tus victorias, para sostener tu mano en los días complicados y para recordarte lo perfecta que eres cuando a ti se te olvide.",
+      "Espero que hoy te dejes consentir muchísimo, que disfrutes cada sorpresa, cada abrazo, cada mensaje y cada detalle, porque genuinamente te mereces todo lo más bonito y puro que este mundo tiene para ofrecer. Que esta nueva vuelta al sol te traiga risas de esas que te hacen doler el estómago, paz en tu corazón, éxito en todo lo que te propongas y, sobre todo, la certeza absoluta de que estoy aquí para ti, amándote sin medida.",
+      "Feliz cumpleaños, mi amor. Gracias por ser tú, por ser mi Samy, y por permitirme ser el hombre afortunado que camina a tu lado.",
+      "Te amo con todo mi corazón, con toda mi alma y con todas mis fuerzas. ¡Que tengas un día tan espectacular, mágico y perfecto como lo eres tú!"
+    ];
+
+    // Variables de estado
+    const envelopeScene = document.getElementById('envelope-scene');
+    const envelopeTrigger = document.getElementById('envelope-trigger');
+    const letterScene = document.getElementById('letter-scene');
+    const letterContent = document.getElementById('letter-content');
+    const pencil = document.getElementById('pencil-Follower');
+    const sketchFooter = document.getElementById('sketch-footer');
+    const ticketContainer = document.getElementById('ticket-container');
+    const tulipTicket = document.getElementById('tulip-ticket');
+    const ticketBtnText = document.getElementById('ticket-btn-text');
+    const floatingDock = document.getElementById('floating-dock');
+
+    const btnPause = document.getElementById('btn-pause');
+    const btnSpeed = document.getElementById('btn-speed');
+    const btnSkip = document.getElementById('btn-skip');
+    const btnSound = document.getElementById('btn-sound');
+    const btnReplay = document.getElementById('btn-replay');
+
+    let charSpans = [];
+    let currentIndex = 0;
+    let isPaused = false;
+    let isFinished = false;
+    let speedMultiplier = 1;
+    let soundEnabled = true;
+    let typingTimer = null;
+    let userTouchScrollTimeout = null;
+    let allowAutoScroll = true;
+
+    // Detectar si el usuario desliza con el dedo en el celular para respetar su lectura
+    window.addEventListener('touchmove', () => {
+      allowAutoScroll = false;
+      clearTimeout(userTouchScrollTimeout);
+      userTouchScrollTimeout = setTimeout(() => { allowAutoScroll = true; }, 3200);
+    }, { passive: true });
+
+    // ================= AUDIO SINTETIZADO (LÁPIZ ASMR + CAJITA MUSICAL) =================
+    let audioCtx = null;
+
+    function initAudio() {
+      if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextClass) audioCtx = new AudioContextClass();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function playPencilScratch() {
+      if (!soundEnabled || !audioCtx) return;
+      try {
+        const duration = 0.032;
+        const bufferSize = audioCtx.sampleRate * duration;
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.45));
+        }
+        const noise = audioCtx.createBufferSource();
+        noise.buffer = buffer;
+
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.value = 1500 + Math.random() * 500;
+        filter.Q.value = 2.4;
+
+        const gain = audioCtx.createGain();
+        gain.gain.value = 0.035;
+
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(audioCtx.destination);
+        noise.start();
+      } catch (e) {}
+    }
+
+    function playMusicBoxChime() {
+      if (!soundEnabled || !audioCtx) return;
+      const notes = [261.63, 261.63, 293.66, 261.63, 349.23, 329.63];
+      const times = [0, 0.35, 0.7, 1.25, 1.8, 2.35];
+      notes.forEach((freq, idx) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq * 2;
+        const startTime = audioCtx.currentTime + times[idx];
+        gain.gain.setValueAtTime(0.001, startTime);
+        gain.gain.exponentialRampToValueAtTime(0.05, startTime + 0.04);
+        gain.gain.exponentialRampToValueAtTime(0.0001, startTime + 0.9);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(startTime);
+        osc.stop(startTime + 0.95);
+      });
+    }
+
+    // ================= CONSTRUCCIÓN DEL DOM DE LA CARTA =================
+    function buildLetterDOM() {
+      letterContent.innerHTML = '';
+      charSpans = [];
+      paragraphsText.forEach((text) => {
+        const p = document.createElement('p');
+        p.className = 'letter-paragraph';
+        for (let i = 0; i < text.length; i++) {
+          const span = document.createElement('span');
+          span.className = 'char';
+          span.textContent = text[i];
+          p.appendChild(span);
+          charSpans.push(span);
+        }
+        letterContent.appendChild(p);
+      });
+    }
+
+    // Posiciona el lápiz sobre la letra actual cuidando que no se salga en móviles
+    function updatePencilPosition(targetSpan) {
+      if (!targetSpan) return;
+      const rect = targetSpan.getBoundingClientRect();
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+
+      const x = Math.min(rect.right, vw - 28);
+      const y = rect.bottom - 6;
+
+      // Micro-vibración natural de escritura a mano
+      const jitterX = (Math.random() - 0.5) * 2.2;
+      const jitterY = (Math.random() - 0.5) * 2.2;
+      const angleAdjust = x > vw * 0.72 ? -18 : 0;
+
+      pencil.style.transform = `translate3d(${x + jitterX}px, ${y - 46 + jitterY}px, 0) rotate(${angleAdjust}deg)`;
+
+      // Auto-scroll suave cuando el renglón baja en celulares o escritorio
+      if (allowAutoScroll && (rect.bottom > vh - 130 || rect.top < 70)) {
+        window.scrollTo({
+          top: window.scrollY + rect.top - vh * 0.52,
+          behavior: 'smooth'
+        });
+      }
+    }
+
+    function writeNextCharacter() {
+      if (isPaused || isFinished) return;
+
+      if (currentIndex >= charSpans.length) {
+        finishWriting();
+        return;
+      }
+
+      const span = charSpans[currentIndex];
+      span.classList.add('visible');
+      pencil.classList.add('active');
+      updatePencilPosition(span);
+
+      const ch = span.textContent;
+      if (ch.trim() !== '') {
+        playPencilScratch();
+      }
+
+      currentIndex++;
+
+      // Pausas humanas según signos de puntuación
+      let delay = 36;
+      if (ch === ',' || ch === ':') delay = 190;
+      else if (ch === '.' || ch === '!' || ch === '¡') delay = 310;
+      else if (ch === ' ') delay = 22;
+
+      delay = Math.max(8, delay / speedMultiplier);
+      typingTimer = setTimeout(writeNextCharacter, delay);
+    }
+
+    function finishWriting() {
+      isFinished = true;
+      clearTimeout(typingTimer);
+      pencil.classList.remove('active');
+      sketchFooter.classList.add('show');
+      setTimeout(() => {
+        ticketContainer.classList.add('visible');
+        if (allowAutoScroll) {
+          ticketContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 650);
+    }
+
+    // ================= EVENTOS DE INTERACCIÓN =================
+    envelopeTrigger.addEventListener('click', () => {
+      initAudio();
+      playMusicBoxChime();
+      envelopeTrigger.classList.add('opening');
+
+      setTimeout(() => {
+        envelopeScene.classList.add('hidden');
+        letterScene.classList.add('active');
+        floatingDock.classList.add('visible');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setTimeout(() => {
+          writeNextCharacter();
+        }, 500);
+      }, 850);
+    });
+
+    btnPause.addEventListener('click', () => {
+      if (isFinished) return;
+      isPaused = !isPaused;
+      btnPause.classList.toggle('active-mode', isPaused);
+      if (!isPaused) writeNextCharacter();
+    });
+
+    btnSpeed.addEventListener('click', () => {
+      speedMultiplier = speedMultiplier === 1 ? 2.6 : 1;
+      btnSpeed.textContent = speedMultiplier === 1 ? '1x' : '2x';
+      btnSpeed.classList.toggle('active-mode', speedMultiplier > 1);
+    });
+
+    btnSkip.addEventListener('click', () => {
+      clearTimeout(typingTimer);
+      charSpans.forEach(s => s.classList.add('visible'));
+      currentIndex = charSpans.length;
+      finishWriting();
+    });
+
+    btnSound.addEventListener('click', () => {
+      initAudio();
+      soundEnabled = !soundEnabled;
+      btnSound.classList.toggle('active-mode', soundEnabled);
+    });
+
+    btnReplay.addEventListener('click', () => {
+      clearTimeout(typingTimer);
+      isPaused = false;
+      isFinished = false;
+      currentIndex = 0;
+      btnPause.classList.remove('active-mode');
+      sketchFooter.classList.remove('show');
+      ticketContainer.classList.remove('visible');
+      charSpans.forEach(s => s.classList.remove('visible'));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setTimeout(writeNextCharacter, 450);
+    });
+
+    tulipTicket.addEventListener('click', () => {
+      initAudio();
+      playMusicBoxChime();
+      tulipTicket.classList.add('claimed');
+      ticketBtnText.textContent = 'Ticket canjeado · Válido por tu Tulipán Blanco';
+      burstTulipPetals();
+    });
+
+    // ================= LIENZO DE PÉTALOS DE TULIPÁN BLANCO =================
+    const canvas = document.getElementById('ambient-canvas');
+    const ctx = canvas.getContext('2d');
+    let petals = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function createPetal(burst = false) {
+      return {
+        x: burst ? window.innerWidth / 2 + (Math.random() - 0.5) * 180 : Math.random() * canvas.width,
+        y: burst ? window.innerHeight * 0.7 : Math.random() * canvas.height,
+        r: 4 + Math.random() * 5,
+        vy: burst ? -(2 + Math.random() * 3) : 0.4 + Math.random() * 0.7,
+        vx: (Math.random() - 0.5) * 1.2,
+        angle: Math.random() * Math.PI * 2,
+        spin: (Math.random() - 0.5) * 0.02,
+        alpha: 0.45 + Math.random() * 0.4,
+        tint: Math.random() > 0.35 ? '#ffffff' : '#ffdbe6'
+      };
+    }
+
+    for (let i = 0; i < 26; i++) petals.push(createPetal(false));
+
+    function burstTulipPetals() {
+      for (let i = 0; i < 24; i++) {
+        petals.push(createPetal(true));
+      }
+    }
+
+    function animateAmbient() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = 0; i < petals.length; i++) {
+        const p = petals[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.angle += p.spin;
+        if (p.vy < 0.5) p.vy += 0.04;
+
+        if (p.y > canvas.height + 20) {
+          p.y = -15;
+          p.x = Math.random() * canvas.width;
+        }
+
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.angle);
+        ctx.globalAlpha = p.alpha;
+        ctx.fillStyle = p.tint;
+        ctx.beginPath();
+        ctx.ellipse(0, 0, p.r * 1.35, p.r * 0.75, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+      requestAnimationFrame(animateAmbient);
+    }
+
+    buildLetterDOM();
+    animateAmbient();
+  </script>
+</body>
+</html>
